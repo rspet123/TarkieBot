@@ -6,9 +6,6 @@ from replit import db
 app = Flask('')
 @app.route('/')
 def main():
-    outs = ""
-    for key1 in db.keys():
-      outs = outs + key1
     return render_template("webapp.html")
 def keep_alive():
     server = Thread(target=run)
