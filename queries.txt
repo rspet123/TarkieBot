@@ -1,0 +1,58 @@
+#### Crafts
+query
+{
+    crafts {
+        source
+    		duration
+      	requiredItems{
+          item{
+            name
+          }
+          count
+        }
+      	rewardItems{
+          item{
+            name
+          }
+          count
+        }
+    }
+}
+
+#### Quests
+query
+{
+    quests{
+      id
+      title
+      unlocks
+      exp
+      reputation{
+        trader{
+          name
+        }
+        amount
+      }
+      requirements{
+        level
+        quests
+        prerequisiteQuests{
+          title
+          id
+        }
+      }
+      objectives{
+        targetItem{
+          name
+        }
+        number
+        location
+      }
+      giver{
+        name
+      }
+      wikiLink
+      
+    }
+    
+}
