@@ -8,6 +8,7 @@ import json
 import keep_alive
 import time
 import datetime
+funnies = ["badwords"]
 token = os.environ['TOKEN']
 currency_dict = {"USD":"$","RUB":"₽","EUR":"€"}
 trader_dict = {"fleaMarket":"Flea",
@@ -17,7 +18,8 @@ trader_dict = {"fleaMarket":"Flea",
                "mechanic":"Mechanic",
                "therapist":"Therapist",
                "jaeger":"Jaeger",
-               "skier":"Skier"
+               "skier":"Skier",
+               "ragman":"Ragman"
               }
 def check(message):
   #Replace this later lol
@@ -71,9 +73,12 @@ async def on_message(message):
     if message.content.startswith('!traders'):
         search_user = message.author
         itemname = message.content.split('!traders ')[1]
+        if itemname in funnies:
+          await message.channel.send("You aren't funny")
+          return
         new_query = """
 {
-    itemsByName(name: "xyzzy") {
+    itemsByName(name: """ + "\""+itemname +"\"" +""") {
         id
         name
         types
@@ -95,8 +100,7 @@ async def on_message(message):
     }
 }
 """
-        ex = new_query.replace("xyzzy", itemname)
-        result = run_query(ex)["data"]["itemsByName"]
+        result = run_query(new_query)["data"]["itemsByName"]
         if len(result) > 1:
           item_list = ""
           type_list = ""
@@ -136,7 +140,7 @@ async def on_message(message):
               except Exception:
                 await message.channel.send("You are unfixably stupid")
           except discord.errors.HTTPException:
-            await message.channel.send("Too many items to display, try again")
+            await message.channel.send("Too many items to display, Narrow your search please")
         else:
           try:
             result = result[0]
@@ -165,10 +169,16 @@ async def on_message(message):
           buy_str = "N\A"
         if sell_str=="":
           sell_str = "N\A"
-        embed2.set_thumbnail(url=result["iconLink"])
-        embed2.add_field(name="Buy from", value=buy_str, inline=True)
-        embed2.add_field(name="Sell to", value=sell_str, inline=True)
-        await message.channel.send(embed=embed2)
+        try:
+          if type(result["iconLink"]) == str:
+            embed2.set_thumbnail(url=result["iconLink"])
+          else:
+            embed2.set_thumbnail(url="https://dontgetserious.com/wp-content/uploads/2021/08/Sad-Cat-Memes-10.jpeg")
+          embed2.add_field(name="Buy from", value=buy_str, inline=True)
+          embed2.add_field(name="Sell to", value=sell_str, inline=True)
+          await message.channel.send(embed=embed2)
+        except discord.errors.HTTPException:
+          print("oops")
         
 
   
